@@ -194,7 +194,7 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
             Paragraph("<b>PROJECT:</b> BrandGuard AI", table_cell),
             Paragraph("<b>DOMAIN:</b> AI Content Governance", table_cell),
             Paragraph("<b>TARGET ROUND:</b> Round 1 — The Plan", table_cell),
-            Paragraph("<b>EVALUATION:</b> 100 Pts Criteria", table_cell)
+            Paragraph("<b>LEADER / AUTHOR:</b> C R Mohul Ram", table_cell)
         ]
     ]
     meta_subtable = Table(meta_table_data, colWidths=[130, 130, 130, 130])
@@ -531,7 +531,7 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
     team_data = [
         [Paragraph("<b>Team Member</b>", table_header), Paragraph("<b>Project Role</b>", table_header), Paragraph("<b>Primary Responsibilities & Ownership</b>", table_header)],
         [
-            Paragraph("<b>[Team Leader Name]</b>", table_cell_bold),
+            Paragraph("<b>C R Mohul Ram</b> (Team Leader)", table_cell_bold),
             Paragraph("Team Leader & Full-Stack Architect", table_cell),
             Paragraph("System design, Prisma relational schema, REST API coordination, submission management, and integration of frontend and backend modules.", table_cell)
         ],
@@ -606,7 +606,7 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
     participant_data = [
         [Paragraph("<b>Full Name (Certificate)</b>", table_header), Paragraph("<b>Email Address</b>", table_header), Paragraph("<b>College / University</b>", table_header), Paragraph("<b>Team Role</b>", table_header)],
         [
-            Paragraph("[Team Leader Full Name]", table_cell),
+            Paragraph("<b>C R Mohul Ram</b>", table_cell_bold),
             Paragraph("[leader.email@domain.com]", table_cell),
             Paragraph("[College / Institution Name]", table_cell),
             Paragraph("Team Leader & Full-Stack Lead", table_cell)
