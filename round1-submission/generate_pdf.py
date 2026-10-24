@@ -28,14 +28,14 @@ class NumberedCanvas(canvas.Canvas):
     def draw_page_decorations(self, page_count):
         self.saveState()
         
-        # Top banner on all pages
+        # Top banner on all pages > 1
         if self._pageNumber > 1:
             self.setFont("Helvetica-Bold", 7.5)
-            self.setFillColor(colors.HexColor("#7c3aed"))
+            self.setFillColor(colors.HexColor("#4f46e5"))
             self.drawString(36, A4[1] - 26, "BRANDGUARD AI")
             self.setFont("Helvetica", 7.5)
             self.setFillColor(colors.HexColor("#64748b"))
-            self.drawString(110, A4[1] - 26, "— Intelligent Content Governance Platform (Round 1 Submission)")
+            self.drawString(110, A4[1] - 26, "— Intelligent Brand Governance Platform (Round 1 Submission)")
             self.drawRightString(A4[0] - 36, A4[1] - 26, "CodeStar 3.0 | Inkloom AI")
             
             # Subtle top border line
@@ -46,7 +46,7 @@ class NumberedCanvas(canvas.Canvas):
         # Bottom footer on all pages
         self.setFont("Helvetica", 7.5)
         self.setFillColor(colors.HexColor("#64748b"))
-        self.drawString(36, 22, "CONFIDENTIAL & PROPRIETARY — SUBMITTED BY C R MOHUL RAM (TEAM LEADER)")
+        self.drawString(36, 22, "CONFIDENTIAL & PROPRIETARY — C R MOHUL RAM (mohulram07@gmail.com | Amrita Vishwa Vidyapeetham)")
         
         page_text = f"Page {self._pageNumber} of {page_count}"
         self.drawRightString(A4[0] - 36, 22, page_text)
@@ -72,14 +72,11 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
 
     # Premium Color Palette
     primary = colors.HexColor("#4f46e5")       # Indigo / Deep Purple
-    primary_dark = colors.HexColor("#312e81")  # Dark Indigo
     accent_cyan = colors.HexColor("#0284c7")   # Deep Sky / Cyan
     header_navy = colors.HexColor("#0f172a")   # Deep Slate Navy
     card_bg = colors.HexColor("#f8fafc")       # Crisp Light Gray
     border_subtle = colors.HexColor("#cbd5e1") # Slate Border
-    border_strong = colors.HexColor("#94a3b8")
     text_main = colors.HexColor("#0f172a")     # Very dark slate for high contrast
-    text_muted = colors.HexColor("#475569")    # Medium slate
 
     # Typography
     title_style = ParagraphStyle(
@@ -144,7 +141,6 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
         spaceAfter=3
     )
 
-    # Crisp High-Contrast Table Typography
     th_style = ParagraphStyle(
         'TableHeader',
         parent=styles['Normal'],
@@ -172,28 +168,10 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
         textColor=text_main
     )
 
-    meta_label = ParagraphStyle(
-        'MetaLabel',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=7,
-        leading=9,
-        textColor=colors.HexColor("#64748b")
-    )
-
-    meta_val = ParagraphStyle(
-        'MetaVal',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=8.5,
-        leading=11,
-        textColor=header_navy
-    )
-
     story = []
 
     # =========================================================================
-    # 0. EXECUTIVE HEADER BLOCK (Crisp Navy Top + Clean White Meta Strip)
+    # 0. EXECUTIVE HEADER BLOCK (Crisp Navy Top + Clean High-Contrast Meta Strip)
     # =========================================================================
     banner_content = [
         [Paragraph("CODESTAR 3.0 HACKATHON &nbsp;|&nbsp; ROUND 1 SUBMISSION &nbsp;|&nbsp; INKLOOM AI CHALLENGE", badge_pill)],
@@ -209,16 +187,16 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
         ('BOTTOMPADDING', (0,0), (-1,-1), 12),
     ]))
 
-    # Clean high-contrast white & slate metadata bar (NO dark-on-dark!)
+    # Clean high-contrast white & slate metadata bar reflecting Solo Team Details
     meta_box_data = [
         [
             Paragraph("<font color='#64748b'>PROJECT NAME</font><br/><b>BrandGuard AI</b>", td_style),
-            Paragraph("<font color='#64748b'>TEAM LEADER / AUTHOR</font><br/><b>C R Mohul Ram</b>", td_style_bold),
-            Paragraph("<font color='#64748b'>PROBLEM STATEMENT</font><br/><b>Inkloom AI Challenge</b>", td_style),
-            Paragraph("<font color='#64748b'>EVALUATION RUBRIC</font><br/><b>Round 1 — 100 Pts</b>", td_style_bold)
+            Paragraph("<font color='#64748b'>PARTICIPANT / SOLO LEAD</font><br/><b>C R Mohul Ram</b>", td_style_bold),
+            Paragraph("<font color='#64748b'>EMAIL ADDRESS</font><br/><b>mohulram07@gmail.com</b>", td_style_bold),
+            Paragraph("<font color='#64748b'>INSTITUTION</font><br/><b>Amrita Vishwa Vidyapeetham</b>", td_style)
         ]
     ]
-    meta_box_table = Table(meta_box_data, colWidths=[130, 140, 133, 120])
+    meta_box_table = Table(meta_box_data, colWidths=[115, 135, 140, 133])
     meta_box_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f1f5f9")), # Light clean background
         ('GRID', (0,0), (-1,-1), 1, colors.HexColor("#cbd5e1")),    # Crisp borders
@@ -278,7 +256,7 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
     ]
     user_table = Table(user_data, colWidths=[120, 203, 200])
     user_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e293b")), # Professional Deep Navy
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e293b")),
         ('GRID', (0,0), (-1,-1), 0.5, border_subtle),
         ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor("#f8fafc")]),
         ('TOPPADDING', (0,0), (-1,-1), 4),
@@ -542,30 +520,35 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
     story.append(rounds_table)
 
     # =========================================================================
-    # SECTION 9: TEAM RESPONSIBILITIES
+    # SECTION 9: RESPONSIBILITIES AS SOLO PARTICIPANT
     # =========================================================================
-    story.append(Paragraph("9. Responsibilities of Each Team Member", h1_style))
+    story.append(Paragraph("9. Responsibilities & Development Ownership <font size=7 color='#4f46e5'>(Solo Participant Track)</font>", h1_style))
+    story.append(Paragraph(
+        "As a solo builder, all architectural, development, and testing responsibilities across frontend, backend, AI integration, and documentation are unified under a single cohesive vision:",
+        body_style
+    ))
+    
     team_data = [
-        [Paragraph("<b>Team Member</b>", th_style), Paragraph("<b>Project Role</b>", th_style), Paragraph("<b>Primary Responsibilities & Ownership</b>", th_style)],
+        [Paragraph("<b>Participant & Track</b>", th_style), Paragraph("<b>Functional Domain</b>", th_style), Paragraph("<b>Key Responsibilities & Deliverables</b>", th_style)],
         [
-            Paragraph("<b>C R Mohul Ram</b><br/><font color='#4f46e5'>Team Leader</font>", td_style_bold),
-            Paragraph("Full-Stack Lead & Product Architect", td_style_bold),
-            Paragraph("System design, Prisma relational schema, REST API coordination, submission management, and integration of frontend and backend modules.", td_style)
+            Paragraph("<b>C R Mohul Ram</b><br/><font color='#4f46e5'>Solo Builder & Lead</font>", td_style_bold),
+            Paragraph("Full-Stack Architecture & Systems Design", td_style_bold),
+            Paragraph("Prisma relational database modeling (15 entities), REST API server setup (Node/Express/TS), JWT auth with role authorization, and monorepo structure.", td_style)
         ],
         [
-            Paragraph("<b>Teammate 2</b>", td_style_bold),
-            Paragraph("Frontend & UI/UX Specialist", td_style),
-            Paragraph("React 18 / Vite frontend, Tailwind CSS enterprise dark design system, side-by-side diff revision workspace, and Recharts analytics dashboards.", td_style)
+            Paragraph("<b>C R Mohul Ram</b><br/><font color='#4f46e5'>Solo Builder & Lead</font>", td_style_bold),
+            Paragraph("AI Governance & Review Engine", td_style_bold),
+            Paragraph("Implementation of the 8-dimensional compliance engine, ground-truth fact matching against approved sources, and Dual-Layer AI Provider Adapter.", td_style)
         ],
         [
-            Paragraph("<b>Teammate 3</b>", td_style_bold),
-            Paragraph("AI & Backend Engineer", td_style),
-            Paragraph("Review Engine implementation, Dual-Layer Provider Adapter (deterministic rule matching + LLM schema integration), document parsing (PDF/DOCX), and scoring service.", td_style)
+            Paragraph("<b>C R Mohul Ram</b><br/><font color='#4f46e5'>Solo Builder & Lead</font>", td_style_bold),
+            Paragraph("Frontend & UI/UX Engineering", td_style_bold),
+            Paragraph("React 18 / Vite client, Tailwind CSS enterprise dark SaaS design system, split-screen revision workspace with one-click fixes, and Recharts telemetry.", td_style)
         ],
         [
-            Paragraph("<b>Teammate 4</b>", td_style_bold),
-            Paragraph("QA, Testing & Data Governance", td_style),
-            Paragraph("Automated Jest testing suite (compliance and authorization tests), NovaTech demo workspace seeding, security audit logging, and documentation.", td_style)
+            Paragraph("<b>C R Mohul Ram</b><br/><font color='#4f46e5'>Solo Builder & Lead</font>", td_style_bold),
+            Paragraph("Testing, Verification & Submission", td_style_bold),
+            Paragraph("Automated Jest testing suite (compliance & authorization tests), NovaTech demo workspace seeding, proposal writing, and live demo script.", td_style)
         ]
     ]
     team_table = Table(team_data, colWidths=[120, 140, 263])
@@ -618,51 +601,33 @@ def build_pdf(filename="BrandGuard_AI_Round1_Submission.pdf"):
     story.append(impact_table)
 
     # =========================================================================
-    # SECTION 12: COMPLETE PARTICIPANT & TEAM DETAILS
+    # SECTION 12: COMPLETE PARTICIPANT & TEAM DETAILS (SOLO PARTICIPANT)
     # =========================================================================
-    story.append(Paragraph("12. Complete Team & Participant Details", h1_style))
+    story.append(Paragraph("12. Complete Participant & Submission Details", h1_style))
     participant_data = [
-        [Paragraph("<b>Full Name (Certificate)</b>", th_style), Paragraph("<b>Email Address</b>", th_style), Paragraph("<b>College / University</b>", th_style), Paragraph("<b>Team Role</b>", th_style)],
+        [Paragraph("<b>Full Name (Certificate)</b>", th_style), Paragraph("<b>Email Address</b>", th_style), Paragraph("<b>College / University</b>", th_style), Paragraph("<b>Participation Track</b>", th_style)],
         [
             Paragraph("<b>C R Mohul Ram</b>", td_style_bold),
-            Paragraph("[leader.email@domain.com]", td_style),
-            Paragraph("[College / Institution Name]", td_style),
-            Paragraph("<b>Team Leader & Full-Stack Lead</b>", td_style_bold)
-        ],
-        [
-            Paragraph("[Teammate 2 Full Name]", td_style),
-            Paragraph("[member2.email@domain.com]", td_style),
-            Paragraph("[College / Institution Name]", td_style),
-            Paragraph("Frontend & UI/UX Specialist", td_style)
-        ],
-        [
-            Paragraph("[Teammate 3 Full Name]", td_style),
-            Paragraph("[member3.email@domain.com]", td_style),
-            Paragraph("[College / Institution Name]", td_style),
-            Paragraph("AI & Backend Engineer", td_style)
-        ],
-        [
-            Paragraph("[Teammate 4 Full Name]", td_style),
-            Paragraph("[member4.email@domain.com]", td_style),
-            Paragraph("[College / Institution Name]", td_style),
-            Paragraph("QA & Testing Lead", td_style)
+            Paragraph("<b>mohulram07@gmail.com</b>", td_style),
+            Paragraph("<b>Amrita Vishwa Vidyapeetham</b>", td_style),
+            Paragraph("<b>Solo Participant / Lead</b>", td_style_bold)
         ]
     ]
     part_table = Table(participant_data, colWidths=[130, 140, 133, 120])
     part_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e293b")),
         ('GRID', (0,0), (-1,-1), 0.5, border_subtle),
-        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor("#f8fafc")]),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 6),
-        ('RIGHTPADDING', (0,0), (-1,-1), 6),
+        ('BACKGROUND', (0,1), (-1,1), colors.HexColor("#f8fafc")),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
     story.append(part_table)
 
     story.append(Spacer(1, 8))
     story.append(Paragraph(
-        "<font color='#64748b' size='7.5'><i>* Note for Judges: All 11 required proposal sections are comprehensively addressed. All team member names match event registration for certificate issuance. Google Drive link permissions are configured as 'Anyone with the link &rarr; Viewer'.</i></font>",
+        "<font color='#64748b' size='7.5'><i>* Note for Judges: All 11 required proposal sections are comprehensively addressed. The project is executed on the Solo Builder Track by C R Mohul Ram (Amrita Vishwa Vidyapeetham). Google Drive link permissions are configured as 'Anyone with the link &rarr; Viewer'.</i></font>",
         body_style
     ))
 
