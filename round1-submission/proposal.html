@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BrandGuard AI - Round 1 Proposal</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm 14mm 16mm 14mm;
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 8pt;
+      color: #64748b;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #0f172a;
+    line-height: 1.45;
+    font-size: 9.5pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Cover / Header Banner */
+  .header-card {
+    background: linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #0e2a47 100%);
+    color: #ffffff;
+    padding: 24px 28px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #312e81;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .badge {
+    background: rgba(139, 92, 246, 0.25);
+    border: 1px solid #8b5cf6;
+    color: #c4b5fd;
+    padding: 3px 10px;
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+  }
+
+  .badge-cyan {
+    background: rgba(6, 182, 212, 0.25);
+    border-color: #06b6d4;
+    color: #67e8f9;
+  }
+
+  .title-main {
+    font-size: 22pt;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 11pt;
+    color: #94a3b8;
+    margin: 0 0 16px 0;
+    font-weight: 500;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .meta-item {
+    font-size: 8.5pt;
+  }
+
+  .meta-label {
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-size: 7pt;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+
+  .meta-val {
+    color: #f1f5f9;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  /* Headings */
+  h2 {
+    font-size: 12.5pt;
+    font-weight: 800;
+    color: #0f172a;
+    border-left: 4px solid #7c3aed;
+    padding-left: 8px;
+    margin: 18px 0 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  h2 .score-weight {
+    font-size: 8pt;
+    font-weight: 700;
+    color: #7c3aed;
+    background: #ede9fe;
+    padding: 2px 8px;
+    border-radius: 9999px;
+  }
+
+  h3 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 12px 0 4px 0;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    color: #334155;
+    text-align: justify;
+  }
+
+  ul, ol {
+    margin: 0 0 10px 0;
+    padding-left: 18px;
+    color: #334155;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  strong {
+    color: #0f172a;
+  }
+
+  /* Grid cards */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .card-highlight {
+    background: #f5f3ff;
+    border: 1px solid #c4b5fd;
+  }
+
+  .card-cyan {
+    background: #ecfeff;
+    border: 1px solid #a5f3fc;
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: 9pt;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 14px 0;
+    font-size: 8.5pt;
+  }
+
+  th {
+    background: #1e1b4b;
+    color: #ffffff;
+    font-weight: 700;
+    text-align: left;
+    padding: 6px 10px;
+    border: 1px solid #1e1b4b;
+  }
+
+  td {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+
+  /* Highlight callout box */
+  .callout {
+    background: #f8fafc;
+    border-left: 4px solid #06b6d4;
+    padding: 8px 12px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 8.8pt;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .step-num {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: #7c3aed;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 18px;
+    font-size: 7.5pt;
+    font-weight: bold;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER / TITLE BANNER -->
+<div class="header-card">
+  <div class="badge-row">
+    <span class="badge">CodeStar 3.0 Hackathon</span>
+    <span class="badge badge-cyan">Round 1 Submission: The Plan</span>
+    <span class="badge">Problem by Inkloom AI</span>
+  </div>
+  <h1 class="title-main">BRANDGUARD AI 🛡️</h1>
+  <div class="subtitle">Intelligent Brand Governance, Ground-Truth Verification & Human-in-the-Loop Content Compliance Platform</div>
+  
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="meta-label">Team Name</div>
+      <div class="meta-val">[Insert Team Name]</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Team Leader</div>
+      <div class="meta-val">[Team Leader Name]</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Leader Email ID</div>
+      <div class="meta-val">[leader.email@domain.com]</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Project Domain</div>
+      <div class="meta-val">AI / Enterprise SaaS / LLM Gov</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<h2>1. Understanding of the Problem Statement <span class="score-weight">Criteria 1 — 25 Pts</span></h2>
+<p>
+Modern decentralized enterprises release hundreds of digital marketing and communication pieces weekly across social channels, blogs, whitepapers, PR releases, and ad campaigns. In fast-paced marketing teams, content is drafted by dozens of content writers, agency contractors, and marketing specialists.
+</p>
+<p>
+<strong>The Core Problem:</strong> Organizations lack automated, deterministic mechanisms to govern brand integrity, tone of voice, factual accuracy, legal disclaimers, and visual standards prior to publishing. Currently, reviews are done either via <em>tedious manual proofreading</em> (which misses subtle errors and delays releases by days) or with <em>generic grammar checkers</em> (Grammarly, ChatGPT) that lack deep knowledge of the company’s internal brand guidelines, product nomenclature, pricing structures, or legal disclaimers.
+</p>
+<p>
+<strong>Business Consequences of the Problem:</strong>
+</p>
+<ul>
+  <li><strong>Legal & Regulatory Fines:</strong> Outdated pricing, unverified performance guarantees, or missing FTC/statutory disclaimers trigger immediate legal liability.</li>
+  <li><strong>Brand Dilution & Customer Mistrust:</strong> Inconsistent voice (casual slang in enterprise PR), misspelled trademarks, and contradictory statements erode customer confidence.</li>
+  <li><strong>Slow Review Cycles & Departmental Bottlenecks:</strong> Brand managers spend 60%+ of their time answering recurring questions and reviewing minor copy corrections instead of strategic branding.</li>
+</ul>
+
+<!-- SECTION 2 -->
+<h2>2. Users Affected by the Problem</h2>
+<div class="grid-3">
+  <div class="card">
+    <div class="card-title">1. Content Creators & Copywriters</div>
+    <p style="font-size: 8pt; margin: 0;">Struggle with ambiguous, multi-page PDF guidelines. They face repeated rejection cycles without clear explanations or actionable alternatives.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">2. Brand & Governance Managers</div>
+    <p style="font-size: 8pt; margin: 0;">Overburdened with reviewing repetitive copy. Lack visibility into systematic guideline violations or audit logs of what changes were applied.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">3. Compliance & Legal Reviewers</div>
+    <p style="font-size: 8pt; margin: 0;">Risk missing critical non-compliant claims or outdated performance statistics across high volumes of omni-channel campaigns.</p>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<h2>3. Proposed Solution: BrandGuard AI <span class="score-weight">Criteria 2 — 25 Pts</span></h2>
+<p>
+<strong>BrandGuard AI</strong> is an intelligent, full-stack content governance and brand compliance platform. It bridges the gap between static brand style-guides and daily publishing workflows through automated, evidence-linked content analysis paired with human-controlled editorial workflows.
+</p>
+<p>
+Instead of a generic black-box score, BrandGuard AI evaluates every piece of text, document (PDF/DOCX), or image against <strong>active corporate brand guidelines</strong> and a <strong>ground-truth repository of approved company facts</strong> across 8 distinct dimensions:
+</p>
+<div class="grid-2">
+  <div class="card card-highlight">
+    <div class="card-title">Category 1–4 Analysis Dimensions</div>
+    <ul style="font-size: 8pt; margin: 0; padding-left: 14px;">
+      <li><strong>Brand Voice:</strong> Formality, tonal consistency, jargon, unapproved language.</li>
+      <li><strong>Terminology:</strong> Product naming, forbidden phrases, preferred spellings.</li>
+      <li><strong>Factual Accuracy:</strong> Ground-truth cross-referencing against verified sources.</li>
+      <li><strong>Promotional Claims:</strong> Flags unsubstantiated superlatives and absolute claims.</li>
+    </ul>
+  </div>
+  <div class="card card-cyan">
+    <div class="card-title">Category 5–8 Analysis Dimensions</div>
+    <ul style="font-size: 8pt; margin: 0; padding-left: 14px;">
+      <li><strong>Brand Messaging:</strong> Core messaging pillars & mandatory legal disclaimers.</li>
+      <li><strong>Visual Compliance:</strong> Palette contrast, dimensions, and logo usage guidelines.</li>
+      <li><strong>Accessibility:</strong> Readability scoring, sentence complexity, image alt-text.</li>
+      <li><strong>Confidentiality:</strong> Detection of internal leak patterns, API keys, roadmap items.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>Key Innovation:</strong> Unsupported factual claims are classified as <em>Unverified</em> rather than falsely labeled as false. Every finding provides 6 explicit fields: (1) What is wrong, (2) Why it matters, (3) Supporting Guideline/Source citation, (4) Severity (Critical/High/Medium/Low), (5) Confidence score, and (6) 1-click Recommended Correction.
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECTION 4 -->
+<h2>4. Complete Product Workflow</h2>
+<p>BrandGuard AI follows a strict, auditable lifecycle ensuring human editors retain absolute decision authority:</p>
+<ol style="margin-bottom: 12px;">
+  <li><span class="step-num">1</span><strong>Content Submission:</strong> Creator enters text or uploads a document (Markdown, TXT, PDF, DOCX) and optional visual attachments. Creator specifies target channel (Social, Blog, PR, Email, Ad) and audience.</li>
+  <li><span class="step-num">2</span><strong>Automated Multi-Dimensional Analysis:</strong> Backend review engine evaluates the content against active brand rules and verified facts using our AI Provider Adapter (supports deterministic rule evaluation and LLMs).</li>
+  <li><span class="step-num">3</span><strong>Interactive Split-Screen Correction Workspace:</strong> The creator opens an intelligent comparison screen. The left side highlights exact problematic spans; the right side offers verified suggested corrections with direct citations.</li>
+  <li><span class="step-num">4</span><strong>One-Click Versioned Revisions:</strong> Creator accepts single or batch suggestions. The engine automatically creates an immutable new version (<code>v1 &rarr; v2</code>) preserving change diffs without ever silently overwriting raw copy.</li>
+  <li><span class="step-num">5</span><strong>Segregation-of-Duties Review & Sign-Off:</strong> Content is submitted to reviewers. <em>System enforces strict segregation: creators cannot approve their own submissions.</em> Reviewers can request changes or grant final sign-off.</li>
+  <li><span class="step-num">6</span><strong>Continuous Governance Intelligence:</strong> Every finding feeds the analytics telemetry, aggregating recurring violations to identify unclear guidelines.</li>
+</ol>
+
+<!-- SECTION 5 -->
+<h2>5. Main Features to be Built</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Feature Module</th>
+      <th style="width: 45%;">Functional Scope</th>
+      <th style="width: 30%;">User Benefit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Content Review Engine</strong></td>
+      <td>Multi-format file parser (TXT, MD, PDF, DOCX, images) with 8-dimensional compliance checks and explainable finding cards.</td>
+      <td>Instantly identifies compliance flaws with precise citations in seconds.</td>
+    </tr>
+    <tr>
+      <td><strong>AI Correction Workspace</strong></td>
+      <td>Side-by-side split screen with highlight markers, 1-click suggestion replacements, manual editing, and version comparison (diffs).</td>
+      <td>Eliminates tedious manual rewrite work while preserving the creator’s voice.</td>
+    </tr>
+    <tr>
+      <td><strong>Brand Guidelines Hub</strong></td>
+      <td>Rule repository with versioning, categorizations, severity thresholds, activation toggles, and change logs.</td>
+      <td>Living source of truth for corporate guidelines across all departments.</td>
+    </tr>
+    <tr>
+      <td><strong>Approved Sources Engine</strong></td>
+      <td>Ground-truth fact database (pricing, feature specs, URLs, statistics, legal text) with verification and expiration dates.</td>
+      <td>Eliminates hallucinated claims and ensures consistent facts across channels.</td>
+    </tr>
+    <tr>
+      <td><strong>Role-Based Approval Workflow</strong></td>
+      <td>4 roles (Creator, Reviewer, Brand Manager, Admin), backend-enforced review statuses, rejection reasons, and comments.</td>
+      <td>Guarantees institutional compliance and prevents self-approval fraud.</td>
+    </tr>
+    <tr>
+      <td><strong>Continuous Governance Analytics</strong></td>
+      <td>Telemetry dashboard showing compliance trends, recurring terminology infractions, turnaround time, and guideline ambiguity alerts.</td>
+      <td>Enables data-driven brand policy improvements.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECTION 6 -->
+<h2>6. Technology Stack & Technical Plan <span class="score-weight">Criteria 3 — 20 Pts</span></h2>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Frontend Architecture</div>
+    <ul style="font-size: 8pt; margin: 0; padding-left: 14px;">
+      <li><strong>Framework:</strong> React 18 with Vite for ultra-fast HMR and bundling.</li>
+      <li><strong>Language:</strong> TypeScript 5 for strict compile-time type safety.</li>
+      <li><strong>Styling:</strong> Tailwind CSS with dark enterprise SaaS design system.</li>
+      <li><strong>Data Visualization:</strong> Recharts for compliance score trends and distribution.</li>
+      <li><strong>State & Routing:</strong> React Router v6 and custom Context API for Auth & Workspace state.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">Backend & Persistence Architecture</div>
+    <ul style="font-size: 8pt; margin: 0; padding-left: 14px;">
+      <li><strong>Server:</strong> Node.js with Express.js REST API in TypeScript.</li>
+      <li><strong>ORM & Database:</strong> Prisma ORM with SQLite for zero-config local evaluation; seamless 1-line switch to PostgreSQL.</li>
+      <li><strong>Document Parsing:</strong> <code>pdf-parse</code> (PDFs), <code>mammoth</code> (DOCX), Multer (multipart).</li>
+      <li><strong>Security & Auth:</strong> JWT with HTTP Bearer tokens, bcryptjs password hashing.</li>
+    </ul>
+  </div>
+</div>
+
+<p>
+<strong>Most Technically Challenging Component & Architectural Solution:</strong><br>
+The hardest technical challenge is <em>preventing AI hallucinations and ungrounded citations</em> while maintaining near-instant analysis speeds. Our planned architecture addresses this via a <strong>Dual-Layer Provider Adapter Pattern</strong>:
+</p>
+<ul>
+  <li><strong>Layer 1 (Deterministic Ground-Truth & Rule Layer):</strong> Uses regex word boundaries, negative phrase registries, and exact source-matching against active guidelines. Guarantees 100% deterministic, reproducible evaluation without external API dependency or token latency.</li>
+  <li><strong>Layer 2 (Pluggable LLM Adapter):</strong> When configured, passes content through strict JSON Schema prompt engineering with temperature zero, forcing the model to cite specific source keys. Fallback logic automatically catches malformed LLM responses.</li>
+</ul>
+
+<!-- SECTION 7 -->
+<h2>7. Originality of Approach & Key Improvements <span class="score-weight">Criteria 4 — 15 Pts</span></h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Area</th>
+      <th style="width: 35%;">Traditional Approaches</th>
+      <th style="width: 40%;">BrandGuard AI Innovation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Factual Handling</strong></td>
+      <td>Binary true/false or generic grammar checks; assumes unmentioned facts are false.</td>
+      <td><strong>Evidence-Linked Ground Truth:</strong> Unsupported claims are tagged as <em>Unverified</em>, distinguishing between verified contradictions and missing proof.</td>
+    </tr>
+    <tr>
+      <td><strong>Editorial Authority</strong></td>
+      <td>AI auto-replaces text silently or outputs loose advice in a chat box.</td>
+      <td><strong>Human-in-the-Loop Revision Workspace:</strong> Side-by-side diffing where creators accept individual suggestions into immutable draft versions.</td>
+    </tr>
+    <tr>
+      <td><strong>Governance Intelligence</strong></td>
+      <td>Single-run check that discards data after completion.</td>
+      <td><strong>Continuous Governance Feedback Loop:</strong> Tracks recurring violation patterns and surfaces actionable alerts to refine confusing brand guidelines.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECTION 8 -->
+<h2>8. Feasibility, Scope & Development Plan Across All 3 Rounds <span class="score-weight">Criteria 5 — 15 Pts</span></h2>
+<p>
+Our development roadmap is engineered to be tightly focused, highly practical, and feasible within the hackathon timeline:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 20%;">Phase</th>
+      <th style="width: 50%;">Milestones & Deliverables</th>
+      <th style="width: 30%;">Status / Deliverable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Round 1 (Current)<br>The Plan</strong></td>
+      <td>Problem synthesis, system architecture design, relational data modeling, UI/UX design specifications, and dual-layer review engine blueprint.</td>
+      <td><strong>Complete Proposal & Architectural Blueprint (Ready)</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Round 2<br>Core MVP Implementation</strong></td>
+      <td>Deploy full-stack monorepo: SQLite + Prisma relational models, JWT authentication with 4 roles, Review Engine for all 8 categories, and Side-by-Side Review Workspace. Seeded with NovaTech demo workspace.</td>
+      <td><strong>Working Full-Stack MVP with End-to-End Workflow</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Round 3<br>Enterprise Polish & Final Demo</strong></td>
+      <td>Continuous governance telemetry, brand asset library, automated Jest compliance & authorization test suite, live video demonstration script, and Dockerized deployment.</td>
+      <td><strong>Production-Ready System with Verified Test Suite</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECTION 9 -->
+<h2>9. Team Responsibilities & Member Roles</h2>
+<p>Work is distributed across complementary specializations ensuring rapid execution:</p>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Member Name</th>
+      <th style="width: 25%;">Assigned Role</th>
+      <th style="width: 50%;">Key Responsibilities</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>[Team Leader Name]</strong></td>
+      <td>Full-Stack Lead & Product Architect</td>
+      <td>Overall architecture, review engine design, Prisma schema, REST API coordination, and submission management.</td>
+    </tr>
+    <tr>
+      <td><strong>[Team Member 2 Name]</strong></td>
+      <td>Frontend & UI/UX Specialist</td>
+      <td>React/Vite implementation, Tailwind design system, side-by-side diff workspace, and Recharts analytics dashboards.</td>
+    </tr>
+    <tr>
+      <td><strong>[Team Member 3 Name]</strong></td>
+      <td>AI & Backend Engineer</td>
+      <td>Provider adapter logic (deterministic + LLM), document parsing (PDF/DOCX), scoring algorithms, and security/audit trails.</td>
+    </tr>
+    <tr>
+      <td><strong>[Team Member 4 Name]</strong> (Optional)</td>
+      <td>QA, Testing & Data Governance</td>
+      <td>Automated Jest testing, segregation-of-duties verification, NovaTech seed dataset curation, and documentation.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECTION 10 & 11 -->
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">10. Expected Impact of the Solution</div>
+    <ul style="font-size: 8pt; margin: 0; padding-left: 14px;">
+      <li><strong>70% Faster Review Turnaround:</strong> Replaces manual proofreading rounds with automated 10-second checks.</li>
+      <li><strong>Zero Brand Dilution:</strong> Consistent nomenclature and voice enforced across decentralized teams.</li>
+      <li><strong>Mitigated Regulatory Risk:</strong> Guarantees required statutory disclaimers are never omitted.</li>
+      <li><strong>Audit-Proof Compliance:</strong> Full audit trail of approvals, rejections, and version histories.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">11. Future Scope Beyond the Event</div>
+    <ul style="font-size: 8pt; margin: 0; padding-left: 14px;">
+      <li><strong>Browser & Figma Extensions:</strong> Real-time compliance checking inside Google Docs, Figma, and Notion.</li>
+      <li><strong>CMS & Social Publishing Webhooks:</strong> Direct integrations with HubSpot, WordPress, LinkedIn, and X/Twitter.</li>
+      <li><strong>Automated Vector RAG:</strong> Vector database integration (pgvector/Pinecone) for semantic guideline search across multi-thousand page corporate documents.</li>
+      <li><strong>Multi-Region Enterprise SSO:</strong> SAML 2.0 / Okta integration for Fortune 500 deployments.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SECTION 12 -->
+<h2>12. Complete Participant & Team Details</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Participant Name</th>
+      <th style="width: 25%;">Email ID</th>
+      <th style="width: 25%;">College / Organization</th>
+      <th style="width: 25%;">Role in Submission</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>[Team Leader Full Name]</td>
+      <td>[leader.email@domain.com]</td>
+      <td>[College / University / Org]</td>
+      <td>Team Leader & Full-Stack Lead</td>
+    </tr>
+    <tr>
+      <td>[Teammate 2 Full Name]</td>
+      <td>[member2.email@domain.com]</td>
+      <td>[College / University / Org]</td>
+      <td>Frontend & UI/UX Engineer</td>
+    </tr>
+    <tr>
+      <td>[Teammate 3 Full Name]</td>
+      <td>[member3.email@domain.com]</td>
+      <td>[College / University / Org]</td>
+      <td>AI & Backend Engineer</td>
+    </tr>
+    <tr>
+      <td>[Teammate 4 Full Name]</td>
+      <td>[member4.email@domain.com]</td>
+      <td>[College / University / Org]</td>
+      <td>QA & Documentation Lead</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="text-align: center; margin-top: 15px; font-size: 8pt; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+  <strong>BrandGuard AI &copy; 2026</strong> — Submitted for CodeStar 3.0 Hackathon &bull; Problem Statement by Inkloom AI
+</div>
+
+</body>
+</html>
