@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String                @id @default(uuid())
+  email            String                @unique
+  passwordHash     String
+  name             String
+  role             String                @default("CREATOR") // CREATOR, BRAND_MANAGER, REVIEWER, ADMIN
+  avatarUrl        String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  memberships      WorkspaceMembership[]
+  createdReviews   ContentReview[]       @relation("CreatedReviews")
+  assignedReviews  ContentReview[]       @relation("AssignedReviews")
+  contentVersions  ContentVersion[]
+  comments         Comment[]
+  approvalDecisions ApprovalDecision[]
+  auditEvents      AuditEvent[]
+  notifications    Notification[]
+  guidelineVersions GuidelineVersion[]
+}
+
+model Workspace {
+  id          String                @id @default(uuid())
+  name        String
+  slug        String                @unique
+  description String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  memberships WorkspaceMembership[]
+  guidelines  BrandGuideline[]
+  sources     ApprovedSource[]
+  assets      BrandAsset[]
+  reviews     ContentReview[]
+  auditEvents AuditEvent[]
+}
+
+model WorkspaceMembership {
+  id          String    @id @default(uuid())
+  userId      String
+  workspaceId String
+  role        String    @default("CREATOR") // CREATOR, BRAND_MANAGER, REVIEWER, ADMIN
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model BrandGuideline {
+  id                    String             @id @default(uuid())
+  workspaceId           String
+  title                 String
+  category              String             // BRAND_VOICE, TERMINOLOGY, FACTUAL_ACCURACY, PROMOTIONAL_CLAIMS, BRAND_MESSAGING, VISUAL_COMPLIANCE, ACCESSIBILITY, CONFIDENTIALITY
+  severity              String             // CRITICAL, HIGH, MEDIUM, LOW
+  description           String
+  ruleDetails           String
+  examplesToAvoid       String?            // JSON string array or newline separated
+  preferredReplacements String?            // JSON string map or text
+  isActive              Boolean            @default(true)
+  version               Int                @default(1)
+  authorId              String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  workspace             Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  versions              GuidelineVersion[]
+  findings              Finding[]
+}
+
+model GuidelineVersion {
+  id            String         @id @default(uuid())
+  guidelineId   String
+  version       Int
+  changeSummary String
+  ruleDetails   String
+  changedById   String?
+  createdAt     DateTime       @default(now())
+
+  guideline     BrandGuideline @relation(fields: [guidelineId], references: [id], onDelete: Cascade)
+  changedBy     User?          @relation(fields: [changedById], references: [id], onDelete: SetNull)
+}
+
+model ApprovedSource {
+  id               String    @id @default(uuid())
+  workspaceId      String
+  title            String
+  sourceType       String    // FACT, PRODUCT_SPEC, PRICING, STATISTIC, OFFICIAL_URL, LEGAL_DISCLAIMER, COMPANY_PROFILE
+  content          String
+  referenceUrl     String?
+  owner            String
+  verificationDate DateTime  @default(now())
+  expirationDate   DateTime?
+  status           String    @default("ACTIVE") // ACTIVE, EXPIRED, ARCHIVED
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  workspace        Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  findings         Finding[]
+}
+
+model BrandAsset {
+  id                String    @id @default(uuid())
+  workspaceId       String
+  name              String
+  assetType         String    // LOGO, COLOR_PALETTE, IMAGE, ICON, TYPOGRAPHY
+  fileUrl           String?
+  description       String
+  usageRestrictions String?
+  metadataJson      String?   // Dimensions, colors, hex codes, min size, etc.
+  status            String    @default("APPROVED") // APPROVED, PENDING, RETIRED
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model ContentReview {
+  id                 String             @id @default(uuid())
+  workspaceId        String
+  creatorId          String
+  reviewerId         String?
+  title              String
+  contentType        String             // BLOG, SOCIAL_MEDIA, ADVERTISEMENT, EMAIL, WEBSITE_COPY, PRESS_RELEASE, OTHER
+  targetAudience     String?
+  channel            String?
+  status             String             @default("DRAFT") // DRAFT, SUBMITTED, IN_REVIEW, CHANGES_REQUESTED, REVISED, APPROVED, REJECTED, ARCHIVED
+  complianceScore    Int                @default(100)
+  criticalCount      Int                @default(0)
+  highCount          Int                @default(0)
+  mediumCount        Int                @default(0)
+  lowCount           Int                @default(0)
+  currentVersionNum  Int                @default(1)
+  imageAttachmentUrl String?
+  notes              String?
+  isDemoRecord       Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  workspace          Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  creator            User               @relation("CreatedReviews", fields: [creatorId], references: [id])
+  reviewer           User?              @relation("AssignedReviews", fields: [reviewerId], references: [id])
+  versions           ContentVersion[]
+  findings           Finding[]
+  comments           Comment[]
+  approvalDecisions  ApprovalDecision[]
+}
+
+model ContentVersion {
+  id               String        @id @default(uuid())
+  reviewId         String
+  versionNum       Int
+  contentBody      String
+  summaryOfChanges String?
+  createdById      String
+  createdAt        DateTime      @default(now())
+
+  review           ContentReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  createdBy        User          @relation(fields: [createdById], references: [id])
+
+  @@unique([reviewId, versionNum])
+}
+
+model Finding {
+  id                  String               @id @default(uuid())
+  reviewId            String
+  versionNum          Int                  @default(1)
+  category            String               // BRAND_VOICE, TERMINOLOGY, FACTUAL_ACCURACY, PROMOTIONAL_CLAIMS, BRAND_MESSAGING, VISUAL_COMPLIANCE, ACCESSIBILITY, CONFIDENTIALITY
+  severity            String               // CRITICAL, HIGH, MEDIUM, LOW
+  title               String
+  excerpt             String
+  explanation         String
+  guidelineId         String?
+  guidelineRef        String?
+  sourceId            String?
+  sourceRef           String?
+  evidence            String
+  confidence          Float                @default(0.9)
+  suggestedCorrection String?
+  status              String               @default("OPEN") // OPEN, ACCEPTED, DISMISSED, FIXED, NEEDS_REVIEW
+  isUnverified        Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  review              ContentReview        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  guideline           BrandGuideline?      @relation(fields: [guidelineId], references: [id], onDelete: SetNull)
+  source              ApprovedSource?      @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  suggestedCorrections SuggestedCorrection[]
+}
+
+model SuggestedCorrection {
+  id                  String    @id @default(uuid())
+  findingId           String
+  originalText        String
+  proposedReplacement String
+  reasoning           String
+  isApplied           Boolean   @default(false)
+  appliedAt           DateTime?
+  createdAt           DateTime  @default(now())
+
+  finding             Finding   @relation(fields: [findingId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String        @id @default(uuid())
+  reviewId  String
+  authorId  String
+  parentId  String?
+  content   String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  review    ContentReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  author    User          @relation(fields: [authorId], references: [id])
+  parent    Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]     @relation("CommentReplies")
+}
+
+model ApprovalDecision {
+  id          String        @id @default(uuid())
+  reviewId    String
+  decidedById String
+  decision    String        // APPROVED, REJECTED, CHANGES_REQUESTED
+  reason      String?
+  createdAt   DateTime      @default(now())
+
+  review      ContentReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  decidedBy   User          @relation(fields: [decidedById], references: [id])
+}
+
+model AuditEvent {
+  id          String     @id @default(uuid())
+  workspaceId String
+  userId      String?
+  entityType  String     // REVIEW, GUIDELINE, SOURCE, ASSET, USER, APPROVAL
+  entityId    String
+  action      String     // CREATED, UPDATED, DELETED, ANALYZED, SUBMITTED, APPROVED, REJECTED, CHANGES_REQUESTED, CORRECTION_APPLIED
+  detailsJson String?    // Stored as JSON string
+  ipAddress   String?
+  createdAt   DateTime   @default(now())
+
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
