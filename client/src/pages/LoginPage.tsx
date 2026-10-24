@@ -49,10 +49,18 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const demoAccounts: { role: UserRole; name: string; title: string; desc: string; color: string }[] = [
+  const demoAccounts: {
+    role: UserRole;
+    name: string;
+    email: string;
+    title: string;
+    desc: string;
+    color: string;
+  }[] = [
     {
       role: 'CREATOR',
       name: 'Alex Rivera',
+      email: 'creator@novatech.io',
       title: 'Content Creator',
       desc: 'Drafts and submits content, applies AI suggestions, creates revisions.',
       color: 'border-blue-500/40 hover:border-blue-400 bg-blue-950/20',
@@ -60,6 +68,7 @@ export const LoginPage: React.FC = () => {
     {
       role: 'REVIEWER',
       name: 'Marcus Sterling',
+      email: 'reviewer@novatech.io',
       title: 'Senior Compliance Reviewer',
       desc: 'Inspects findings, adds comments, requests changes, signs off on publication.',
       color: 'border-amber-500/40 hover:border-amber-400 bg-amber-950/20',
@@ -67,6 +76,7 @@ export const LoginPage: React.FC = () => {
     {
       role: 'BRAND_MANAGER',
       name: 'Elena Vance',
+      email: 'manager@novatech.io',
       title: 'Brand Governance Manager',
       desc: 'Controls guidelines, manages approved facts and brand assets.',
       color: 'border-purple-500/40 hover:border-purple-400 bg-purple-950/20',
@@ -74,6 +84,7 @@ export const LoginPage: React.FC = () => {
     {
       role: 'ADMIN',
       name: 'Sarah Chen',
+      email: 'admin@novatech.io',
       title: 'Platform Administrator',
       desc: 'Configures workspace, manages team roles and security policies.',
       color: 'border-cyan-500/40 hover:border-cyan-400 bg-cyan-950/20',
@@ -133,6 +144,9 @@ export const LoginPage: React.FC = () => {
                       {d.role}
                     </span>
                   </div>
+                  <div className="text-[10px] text-cyan-400 font-mono mb-1">
+                    {d.email}
+                  </div>
                   <span className="text-[11px] font-semibold text-slate-300 block mb-1">
                     {d.title}
                   </span>
@@ -149,9 +163,14 @@ export const LoginPage: React.FC = () => {
 
         {/* Standard Email Login */}
         <div className="p-6 rounded-2xl bg-[#111827] border border-[#1F293D] space-y-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block pb-2 border-b border-[#1F293D]">
-            Or Sign In With Account Credentials
-          </span>
+          <div className="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Or Sign In With Account Credentials
+            </span>
+            <span className="text-[10px] text-slate-500 font-mono">
+              Default password: <span className="text-purple-400 font-bold">Password123!</span> or <span className="text-purple-400 font-bold">password123</span>
+            </span>
+          </div>
 
           <form onSubmit={handleStandardLogin} className="space-y-4">
             <div>
