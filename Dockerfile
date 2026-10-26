@@ -37,5 +37,5 @@ ENV PORT=5000
 ENV NODE_ENV=production
 ENV DATABASE_URL="file:./dev.db"
 
-# Start database push, seed if empty, and launch
-CMD sh -c "npx prisma db push && (node -e 'const { PrismaClient } = require(\"@prisma/client\"); const p = new PrismaClient(); p.user.count().then(c => { if(c === 0) { console.log(\"Seeding DB...\"); require(\"child_process\").execSync(\"npx ts-node prisma/seed.ts\"); } p.$disconnect(); });') && node dist/index.js"
+# Start database push, seed if empty, and launch server
+CMD ["sh", "-c", "npx prisma db push && node init-db.js && node dist/index.js"]
