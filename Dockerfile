@@ -37,5 +37,5 @@ ENV PORT=5000
 ENV NODE_ENV=production
 ENV DATABASE_URL="file:./dev.db"
 
-# Start database push, seed if empty, and launch server
-CMD ["sh", "-c", "npx prisma db push && node init-db.js && node dist/index.js"]
+# Start database initialization and launch server
+CMD ["sh", "-c", "node init-db.js && node dist/index.js"]
