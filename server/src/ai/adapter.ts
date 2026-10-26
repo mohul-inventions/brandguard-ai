@@ -54,12 +54,36 @@ export class DemoRuleEngineAdapter implements AIProviderAdapter {
       for (const badPhrase of examplesToAvoid) {
         if (!badPhrase || badPhrase.trim() === '') continue;
         const phraseLower = badPhrase.toLowerCase();
+
+        // If the bad phrase is an exact match for approved capitalization (e.g. 'novatech pulse'),
+        // make sure we don't flag the correctly capitalized form ('NovaTech Pulse').
+        const isCaseCorrectionOnly = badPhrase.toLowerCase() === (replacements[badPhrase] || '').toLowerCase();
         
-        // Exact or case-insensitive search
-        if (textLower.includes(phraseLower)) {
-          // Find original match excerpt
-          const matchIndex = textLower.indexOf(phraseLower);
-          const excerpt = content.substring(matchIndex, matchIndex + badPhrase.length);
+        let matchIndex = -1;
+        let excerpt = '';
+
+        if (isCaseCorrectionOnly) {
+          // Look for incorrect case matches only
+          const exactApproved = replacements[badPhrase];
+          // Find all occurrences of badPhrase case-insensitively
+          const regex = new RegExp(badPhrase.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'gi');
+          let m;
+          while ((m = regex.exec(content)) !== null) {
+            if (m[0] !== exactApproved) {
+              matchIndex = m.index;
+              excerpt = m[0];
+              break;
+            }
+          }
+        } else {
+          // General phrase check with boundary / substring
+          if (textLower.includes(phraseLower)) {
+            matchIndex = textLower.indexOf(phraseLower);
+            excerpt = content.substring(matchIndex, matchIndex + badPhrase.length);
+          }
+        }
+
+        if (matchIndex !== -1 && excerpt) {
           const suggested = replacements[badPhrase] || replacements[excerpt] || Object.values(replacements)[0] || 'Remove or replace with approved phrasing';
 
           findings.push({

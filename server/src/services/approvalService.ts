@@ -88,7 +88,9 @@ export class ApprovalService {
   static async approveReview(reviewId: string, userId: string, userRole: UserRole, reason?: string) {
     const review = await prisma.contentReview.findUnique({
       where: { id: reviewId },
-      include: { findings: { where: { status: 'OPEN', severity: 'CRITICAL' } } },
+      include: {
+        findings: true,
+      },
     });
     if (!review) throw new Error('Review not found');
 
@@ -102,9 +104,13 @@ export class ApprovalService {
       throw new Error('Policy Violation: Creators are strictly prohibited from approving their own content submissions.');
     }
 
-    // Guard: Critical unresolved issues check
-    if (review.findings.length > 0) {
-      throw new Error(`Cannot approve review while ${review.findings.length} critical unresolved issue(s) remain.`);
+    // Guard: Critical unresolved issues check on current active version
+    const activeCriticalFindings = review.findings.filter(
+      (f) => f.versionNum === review.currentVersionNum && f.status === 'OPEN' && f.severity === 'CRITICAL'
+    );
+
+    if (activeCriticalFindings.length > 0) {
+      throw new Error(`Cannot approve review while ${activeCriticalFindings.length} critical unresolved issue(s) remain.`);
     }
 
     const updated = await prisma.contentReview.update({
