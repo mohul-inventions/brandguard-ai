@@ -19,10 +19,22 @@ declare global {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-brandguard-jwt-key-hackathon-2026';
+const getJwtSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[FATAL SECURITY ERROR]: JWT_SECRET must be explicitly set in production environment.');
+    }
+    return 'development-brandguard-jwt-fallback-key-2026';
+  }
+  if (process.env.NODE_ENV === 'production' && secret.length < 16) {
+    throw new Error('[FATAL SECURITY ERROR]: JWT_SECRET is too short. Must be at least 16 characters in production.');
+  }
+  return secret;
+};
 
 export const generateToken = (payload: { id: string; email: string; role: string; workspaceId: string }) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: '7d' });
 };
 
 export const requireAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -34,7 +46,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as {
+    const decoded = jwt.verify(token, getJwtSecret()) as {
       id: string;
       email: string;
       role: UserRole;
