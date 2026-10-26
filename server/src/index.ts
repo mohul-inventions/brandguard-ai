@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -59,6 +60,22 @@ app.use('/api/reviews/:id/comments', commentRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
+
+// Production Frontend Static Assets & SPA Fallback
+const clientDistPath = path.join(__dirname, '../../client/dist');
+const altClientDistPath = path.join(__dirname, '../client/dist');
+const staticPath = fs.existsSync(clientDistPath) ? clientDistPath : altClientDistPath;
+
+if (fs.existsSync(staticPath)) {
+  app.use(express.static(staticPath));
+  // All unhandled GET routes return the SPA index.html
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(staticPath, 'index.html'));
+  });
+}
 
 // Centralized Safe Error Handling Middleware
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

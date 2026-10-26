@@ -1,7 +1,8 @@
 # BRANDGUARD AI 🛡️
 ### Intelligent Brand Governance & Content Compliance Platform
-
-> Built for the Inkloom AI Hackathon Challenge
+> **Built for CodeStar 30 Hackathon — Round 2 Evaluation**  
+> **Problem Statement Challenge by Inkloom AI**  
+> **Author & Solo Builder:** C R Mohul Ram (`mohulram07@gmail.com` | Amrita Vishwa Vidyapeetham)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3-61dafb.svg)](https://reactjs.org/)
@@ -13,160 +14,200 @@
 
 ---
 
-## 1. Executive Summary & Vision
+## 1. Executive Summary & Problem Solved
 
-Modern enterprises create hundreds of pieces of digital collateral across social media, advertising campaigns, blog posts, whitepapers, and sales collateral. A single off-brand superlative, outdated pricing statement, or missing regulatory disclaimer can trigger severe legal penalties, FTC complaints, or brand dilution.
+Modern decentralized enterprises publish hundreds of marketing and communication pieces weekly across social channels, blogs, whitepapers, PR releases, and ad campaigns. Manual proofreading is slow, creates multi-day release bottlenecks, and misses critical non-compliant claims.
 
-**BrandGuard AI** is an intelligent content governance and compliance platform that inspects content against approved corporate guidelines, voice profiles, authoritative ground-truth sources, and accessibility standards prior to publication.
+**BrandGuard AI** is an intelligent content governance and compliance platform that inspects content prior to publication against active corporate guidelines, approved ground-truth facts, legal disclaimer standards, and accessibility requirements.
 
 ### Key Capabilities:
 - **8 Analysis Categories**: Brand Voice, Terminology, Factual Accuracy, Promotional Claims, Brand Messaging, Visual Compliance, Accessibility, and Confidentiality.
-- **Evidence-Linked Findings**: Every issue provides the exact text excerpt, rationale, guideline citation, verified source citation, confidence level, and suggested correction.
-- **Human-in-the-Loop AI Correction Workspace**: Side-by-side editing environment allowing creators to inspect highlights, apply suggested replacements with one click, and save immutable version drafts (`v1 -> v2`).
-- **Segregation of Duties & Approval Controls**: Content creators cannot approve their own submissions. Reviewers and Brand Managers inspect findings, request revisions, and formally sign off on publication.
-- **Continuous Governance Intelligence**: Analytics identify recurring violations and potentially ambiguous guidelines to improve organizational compliance over time.
+- **Evidence-Linked Findings**: Every issue provides the exact text excerpt, rationale, guideline citation, verified source citation, confidence score, and recommended replacement.
+- **Side-by-Side AI Correction Workspace**: Intelligent editor highlighting exact errors with 1-click suggestion replacements and immutable draft versioning (`v1 -> v2`).
+- **Segregation of Duties & Approval Controls**: Backend strictly blocks creators from approving their own submissions. Formal sign-offs with recorded reasons are enforced for Reviewers and Brand Managers.
+- **Continuous Governance Telemetry**: Live analytics aggregating recurring violations to identify ambiguous corporate guidelines.
 
 ---
 
-## 2. The Three Key Improvements
+## 2. Technology Stack
 
-### 🔹 IMPROVEMENT 1 — Evidence-Linked AI Review
-Every finding links directly to an active brand guideline (`guidelineRef`) or verified source (`sourceRef`) and explains the exact reasoning for the flag. Crucially, unsupported claims are categorized as **Unverified** rather than automatically assumed false, providing nuanced decision support.
-
-### 🔹 IMPROVEMENT 2 — Human-Controlled Revision & Approval
-The system enforces strict segregation of duties. Creators retain full editorial control over draft copy and must accept suggestions intentionally. Reviewers can request changes with mandatory reasons or approve content. The backend strictly prohibits creators from self-approving their own submissions.
-
-### 🔹 IMPROVEMENT 3 — Continuous Governance Intelligence
-Rather than treating each review as an isolated check, BrandGuard AI aggregates violation patterns across departments and content types. It flags recurring naming errors and surfaces actionable governance recommendations (e.g. recommending guideline updates for ambiguous terminology).
+- **Frontend**: React 18, Vite 5, TypeScript 5, Tailwind CSS 3, Lucide React, Recharts 2.15, React Router v6.
+- **Backend**: Node.js v24, Express.js 4, TypeScript, Prisma ORM 5.22, Multer, `pdf-parse`, `mammoth`.
+- **Database**: SQLite (default local zero-config; ready for 1-line switch to PostgreSQL).
+- **Dual-Layer Review Engine**:
+  - **Deterministic Rule Engine (Default, 100% Offline)**: Uses exact matching, regex boundaries, negative phrase registries, and approved source cross-referencing. Zero external API keys needed; 100% reproducible.
+  - **External LLM Adapter**: Pluggable support for OpenAI GPT-4o, Google Gemini, and Anthropic Claude with strict JSON schema validation.
 
 ---
 
-## 3. Technology Stack
-
-- **Frontend**: React 18, Vite, TypeScript, Tailwind CSS, Lucide React icons, Recharts telemetry charts, React Router v6.
-- **Backend**: Node.js, Express.js, TypeScript, REST API architecture.
-- **Persistence**: SQLite with Prisma ORM for seamless, zero-configuration local setup. Designed with clean abstractions for instant migration to PostgreSQL.
-- **Document & Image Processing**: Multer for secure multipart uploads, `pdf-parse` for PDF text extraction, `mammoth` for DOCX parsing, metadata inspections for PNG/JPG/SVG/WEBP.
-- **AI Engine Architecture**: Provider Adapter Pattern supporting:
-  - **Deterministic Demo Rule Engine** (Default, zero API keys required, 100% reproducible and verifiable).
-  - **External LLM Adapter** (OpenAI GPT-4o, Google Gemini, Anthropic Claude with strict JSON schema validation).
-
----
-
-## 4. Quick Start & Local Setup
+## 3. Quick Start & Local Setup
 
 ### Prerequisites
-- Node.js (v18 or higher recommended; developed on Node v24)
+- Node.js (v18 or higher; tested on Node v20 & v24)
 - npm (v9+)
 
-### Installation & Database Setup
+### Installation
+```bash
+git clone <repo-url>
+cd brandguard-ai
 
-1. **Clone or navigate to the repository**:
-   ```bash
-   cd brandguard-ai
-   ```
+# Install root, backend, and frontend dependencies
+npm --prefix server install
+npm --prefix client install
+```
 
-2. **Install all dependencies** (Server and Client):
-   ```bash
-   cd server && npm install
-   cd ../client && npm install
-   cd ..
-   ```
+### Database Initialization & Seeding
+```bash
+cd server
+npx prisma generate
+npx prisma db push
+npx ts-node prisma/seed.ts
+cd ..
+```
 
-3. **Initialize the Database**:
-   ```bash
-   cd server
-   npx prisma generate
-   npx prisma db push
-   npx ts-node prisma/seed.ts
-   cd ..
-   ```
+### Running Locally (Development Mode)
+Run both backend and frontend concurrently in two terminals:
 
-4. **Start the Development Servers**:
-   - **Backend API Server** (Port 5000):
-     ```bash
-     cd server && npm run dev
-     ```
-   - **Frontend Vite Client** (Port 5173, in a separate terminal):
-     ```bash
-     cd client && npm run dev
-     ```
+**Terminal 1 — Backend API Server (Port 5000)**:
+```bash
+cd server
+npm run dev
+```
 
-5. **Open Application**:
-   Navigate to [http://localhost:5173](http://localhost:5173).
+**Terminal 2 — Frontend Client (Port 5173)**:
+```bash
+cd client
+npm run dev
+```
+
+Open your browser at **`http://localhost:5173`**.
+
+---
+
+## 4. Single-Port Full-Stack Mode (Unified Server)
+The backend is configured to automatically serve the compiled frontend (`client/dist`) and static uploaded files from port `5000`:
+
+```bash
+# 1. Build frontend
+npm --prefix client run build
+
+# 2. Build backend
+npm --prefix server run build
+
+# 3. Start unified production server
+npm --prefix server start
+```
+Now access the entire application directly at **`http://localhost:5000`**!
 
 ---
 
 ## 5. Demo Logins & Persona Switching
 
-The application comes pre-seeded with the fictional **NovaTech Global** workspace. You can log in using standard credentials, or use the **1-Click Demo Persona Switcher** on the login screen or in the top header:
+On the Login screen (`/login`), click any **1-Click Demo Evaluation Sign In** card or enter credentials:
 
-| Persona | Name | Role | Email | Password | Primary Permissions |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Creator** | Alex Rivera | `CREATOR` | `creator@novatech.io` | `password123` | Submit content, apply AI fixes, save revisions |
-| **Reviewer** | Marcus Sterling | `REVIEWER` | `reviewer@novatech.io` | `password123` | Inspect findings, request changes, approve |
-| **Brand Manager** | Elena Vance | `BRAND_MANAGER` | `manager@novatech.io` | `password123` | Manage guidelines, facts, and brand assets |
-| **Administrator** | Sarah Chen | `ADMIN` | `admin@novatech.io` | `password123` | Manage user roles, permissions, settings |
+| Persona | Role | Email | Password | Permissions |
+| :--- | :--- | :--- | :--- | :--- |
+| **Alex Rivera** | `Creator` | `creator@novatech.io` | `Password123!` | Create & edit drafts, apply suggestions, resubmit. |
+| **Marcus Sterling** | `Reviewer` | `reviewer@novatech.io` | `Password123!` | Inspect findings, request changes, approve compliant reviews. |
+| **Elena Vance** | `Brand Manager` | `manager@novatech.io` | `Password123!` | Manage brand guidelines, approved facts, and brand assets. |
+| **Sarah Chen** | `Administrator` | `admin@novatech.io` | `Password123!` | Full user management, workspace administration, and audit logs. |
+
+*Note: You can switch active personas anytime using the **Demo Role Switcher** dropdown in the top header without logging out!*
 
 ---
 
-## 6. Running Automated Tests
+## 6. End-to-End Evaluation Walkthrough (For Judges)
 
-Run the backend test suite:
+1. **Sign in as Creator**: Click **"Alex Rivera (Creator)"** on `/login`.
+2. **Submit Content**:
+   - Navigate to **"New Review"** in the sidebar.
+   - Click the purple **"Load NovaTech Demo Content"** button in the header. This pre-fills content with intentional violations:
+     - Unapproved brand name (`Nova Tech Pulse`).
+     - Exaggerated superlative (`the world's number one productivity platform`).
+     - Absolute guarantee (`100% guarantee`).
+     - Outdated pricing (`only $10/user`).
+     - Missing mandatory promotional disclaimer.
+   - Click **"Analyze Content Compliance"**.
+3. **Inspect Evidence-Linked Findings**:
+   - You are redirected to the **AI Correction Workspace** (`/reviews/:id`).
+   - Notice the low score and highlighted findings cards across Terminology, Promotional Claims, Factual Accuracy, Brand Voice, and Messaging.
+4. **Apply Corrections**:
+   - Click **"Apply All Safe Corrections"** or click **"Apply Correction"** on individual cards.
+   - Watch the draft text update in real time with approved phrasing!
+   - Click **"Save Revised Draft (v2)"**.
+   - The engine generates Version 2, updates change diffs, and re-evaluates compliance (score jumps to 100%).
+5. **Test Segregation of Duties**:
+   - Notice that while logged in as Creator, the **Approve Review** button is blocked.
+6. **Switch Persona & Sign Off**:
+   - In the top header, click **"Demo Role: CREATOR"** $\rightarrow$ switch to **"Marcus Sterling (Senior Reviewer)"**.
+   - Now click **"Approve Review"**, enter an approval note, and sign off.
+   - The review transitions to `APPROVED`, and decision timestamps are permanently logged.
+7. **View Governance Analytics**:
+   - Navigate to **"Analytics"** in the sidebar to view violation trends, recurring terminology errors, and turnaround velocity.
+
+---
+
+## 7. Automated Tests & Build Verification
+
+Run the test suite:
 ```bash
-cd server
-npm test
+npm --prefix server test
 ```
 
-### Verified Scenarios:
-- Deterministic compliance engine flags split brand naming, unverified superlatives, and pricing discrepancies.
-- Deterministic scoring methodology accurately calculates deductions and warns on unresolved critical findings.
-- Critical findings remain prominently flagged even if the overall compliance score is high.
-- Segregation of duties prevents creators from approving their own submissions.
-- Authorized reviewers can approve compliant submissions with audit trail logging.
+### Verified Test Results:
+```text
+PASS src/__tests__/compliance.test.ts
+  BrandGuard AI Compliance Engine Tests
+    ✓ Deterministic rule engine correctly flags brand naming and unsupported superlatives (7 ms)
+    ✓ Scoring methodology accurately computes deductions and alerts on unresolved critical issues (2 ms)
+    ✓ Critical findings remain visible even when overall compliance score is high (1 ms)
+
+PASS src/__tests__/approval.test.ts
+  Review & Approval Workflow Authorization Tests
+    ✓ Creator CANNOT approve their own content submissions (11 ms)
+    ✓ User with Creator role cannot request changes or reject content (3 ms)
+    ✓ Authorized Reviewer CAN approve compliant content without critical issues (37 ms)
+
+Test Suites: 2 passed, 2 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        2.03 s
+```
 
 ---
 
-## 7. Production Build
+## 8. Deployment Instructions (Cloud & Production)
 
-To produce optimized production builds:
+### Option A: Docker Deployment (Recommended)
+A production-ready `Dockerfile` and `docker-compose.yml` are provided in the repository:
 
 ```bash
-# Build backend TypeScript
-cd server && npm run build
-
-# Build frontend bundle
-cd ../client && npm run build
+docker compose up --build -d
 ```
+Access the application on port `5000`.
 
-The compiled frontend is output to `client/dist/` and can be served statically or proxied behind Nginx / Cloudflare Pages.
+### Option B: Platform as a Service (Render, Railway, Fly.io)
+1. **Repository**: Connect your GitHub repository.
+2. **Build Command**:
+   ```bash
+   npm --prefix client install && npm --prefix client run build && npm --prefix server install && npm --prefix server run build
+   ```
+3. **Start Command**:
+   ```bash
+   cd server && npx prisma db push && node dist/index.js
+   ```
+4. **Environment Variables**:
+   - `PORT=5000`
+   - `NODE_ENV=production`
+   - `DATABASE_URL=file:./dev.db` (or PostgreSQL URL)
+   - `JWT_SECRET=your_super_secret_production_key`
+   - `CLIENT_ORIGIN=https://your-domain.up.railway.app`
+   - `AI_PROVIDER=demo`
 
 ---
 
-## 8. Environment Variables
+## 9. Known Limitations & Production Roadmap
 
-See `.env.example` at the repository root:
-
-```env
-PORT=5000
-NODE_ENV=development
-DATABASE_URL="file:./dev.db"
-JWT_SECRET="replace-with-a-secure-random-secret"
-CLIENT_ORIGIN="http://localhost:5173"
-
-# AI Provider: 'demo' (default), 'openai', 'gemini', or 'anthropic'
-AI_PROVIDER=demo
-
-# Optional: Add external API keys if AI_PROVIDER is set to external models
-OPENAI_API_KEY=
-GEMINI_API_KEY=
-ANTHROPIC_API_KEY=
-```
-
----
-
-## 9. Limitations & AI Disclosure
-
-- **Demo vs. Real AI**: In default demonstration mode (`AI_PROVIDER=demo`), the platform executes a deterministic rule engine to ensure 100% reproducible evaluations for judges without requiring paid API credits. If an OpenAI or Gemini API key is provided, the application routes requests to the external model via the adapter.
-- **Visual Compliance Scope**: Image asset checks verify format, dimensions, file size, and basic contrast. Deep computer vision logo matching (e.g. clear space margin measurement) is labeled as requiring human reviewer confirmation.
-- **Single Database File**: The MVP utilizes SQLite for simple local installation. The Prisma schema is 100% compatible with PostgreSQL for production scale.
+1. **Database Backend**: Defaults to SQLite for instant, zero-config local evaluation. For multi-instance scaling, switch `provider = "sqlite"` to `"postgresql"` in `server/prisma/schema.prisma`.
+2. **Visual Logo Matching**: Measurable properties (dimensions, encoding, and color palette matching) run locally. Semantic logo pixel-matching is flagged as requiring human review or vision model enablement.
+3. **External LLM Rate Limits**: In LLM mode, third-party provider latency depends on external API limits. The deterministic engine provides instant, 100% offline fallback.
