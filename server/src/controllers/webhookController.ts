@@ -13,19 +13,47 @@ export interface CMSWebhookPayload {
   workspaceSlug?: string;
 }
 
+// In-memory cache for webhook replay protection (prevents identical request replay attacks within 5 minutes)
+const processedWebhookHashes = new Set<string>();
+
 /**
- * Validates HMAC SHA-256 signatures for incoming CMS webhooks.
+ * Validates HMAC SHA-256 signatures for incoming CMS webhooks with replay protection.
  */
 export function verifyWebhookSignature(
   rawBody: string | Buffer,
   signatureHeader: string | undefined,
-  secretKey: string
+  secretKey: string,
+  timestampHeader?: string
 ): boolean {
   if (!signatureHeader || !secretKey) return false;
   try {
+    // 1. Replay attack check if timestamp supplied
+    if (timestampHeader) {
+      const ts = parseInt(timestampHeader, 10);
+      const now = Date.now();
+      // If timestamp is older than 5 minutes or in the future by > 1 minute, reject
+      if (isNaN(ts) || Math.abs(now - ts) > 5 * 60 * 1000) {
+        return false;
+      }
+    }
+
     const cleanHeader = signatureHeader.replace(/^sha256=/, '').trim();
     const computedHmac = crypto.createHmac('sha256', secretKey).update(rawBody).digest('hex');
-    return crypto.timingSafeEqual(Buffer.from(cleanHeader, 'hex'), Buffer.from(computedHmac, 'hex'));
+    const isValid = crypto.timingSafeEqual(Buffer.from(cleanHeader, 'hex'), Buffer.from(computedHmac, 'hex'));
+
+    if (isValid) {
+      const payloadHash = crypto.createHash('sha256').update(rawBody).digest('hex');
+      if (processedWebhookHashes.has(payloadHash)) {
+        // Replay detected
+        return false;
+      }
+      processedWebhookHashes.add(payloadHash);
+      // Evict after 10 minutes to bound memory (unref timer so it doesn't block node process exit in tests)
+      const timer = setTimeout(() => processedWebhookHashes.delete(payloadHash), 10 * 60 * 1000);
+      if (timer.unref) timer.unref();
+    }
+
+    return isValid;
   } catch {
     return false;
   }
@@ -107,15 +135,19 @@ export const handleCMSWebhook = async (req: Request, res: Response): Promise<voi
       req.headers['x-contentful-signature'] ||
       req.headers['x-brandguard-signature']) as string | undefined;
 
+    const timestamp = (req.headers['x-hubspot-request-timestamp'] ||
+      req.headers['x-strapi-timestamp'] ||
+      req.headers['x-brandguard-timestamp']) as string | undefined;
+
     const webhookSecret = process.env.CMS_WEBHOOK_SECRET || 'brandguard-cms-webhook-secret-2026';
 
     // Verify webhook signature if present or if configured strictly
     if (process.env.ENFORCE_WEBHOOK_SIGNATURE === 'true') {
-      const isValid = verifyWebhookSignature(JSON.stringify(req.body), signature, webhookSecret);
+      const isValid = verifyWebhookSignature(JSON.stringify(req.body), signature, webhookSecret, timestamp);
       if (!isValid) {
         res.status(401).json({
           decision: 'BLOCKED',
-          error: 'Unauthorized: Invalid CMS webhook signature.',
+          error: 'Unauthorized: Invalid or replayed CMS webhook signature.',
         });
         return;
       }

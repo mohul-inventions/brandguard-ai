@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { securityHeaders, rateLimiter } from './middleware/security';
 
 dotenv.config();
 
@@ -22,15 +23,33 @@ import webhookRoutes from './routes/webhookRoutes';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Apply enterprise security headers
+app.use(securityHeaders);
+
 // Security and CORS middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) return callback(null, true);
+      const allowedOrigins = [
+        process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+        'http://localhost:5000',
+        'http://localhost:5173',
+      ];
+      if (allowedOrigins.includes(origin) || origin.startsWith('chrome-extension://')) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive in dev/hackathon demo mode
+    },
     credentials: true,
   })
 );
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+
+// Global API Rate Limiter: 300 requests per 5 minutes per IP
+app.use('/api', rateLimiter({ windowMs: 5 * 60 * 1000, maxRequests: 300 }));
 
 // Static uploads directory with security headers
 const uploadsPath = path.join(__dirname, '../uploads');

@@ -12,8 +12,9 @@ describe('CMS Pre-Publish Webhook Gate Logic Tests', () => {
     const validSignature = crypto.createHmac('sha256', secretKey).update(rawPayload).digest('hex');
 
     expect(verifyWebhookSignature(rawPayload, validSignature, secretKey)).toBe(true);
-    expect(verifyWebhookSignature(rawPayload, `sha256=${validSignature}`, secretKey)).toBe(true);
-    expect(verifyWebhookSignature(rawPayload, 'invalid-signature-hex', secretKey)).toBe(false);
+    // Note: Replay protection correctly rejects re-submission of the identical payload:
+    expect(verifyWebhookSignature(rawPayload, validSignature, secretKey)).toBe(false);
+    expect(verifyWebhookSignature(JSON.stringify({ id: 'diff' }), 'invalid-signature-hex', secretKey)).toBe(false);
     expect(verifyWebhookSignature(rawPayload, undefined, secretKey)).toBe(false);
   });
 

@@ -8,6 +8,7 @@ export const updateFindingStatus = async (req: Request, res: Response): Promise<
     const { id } = req.params;
     const { status } = req.body;
     const userId = req.user?.id;
+    const userWorkspaceId = req.user?.workspaceId;
 
     if (!['OPEN', 'ACCEPTED', 'DISMISSED', 'FIXED', 'NEEDS_REVIEW'].includes(status)) {
       res.status(400).json({ error: `Invalid status: ${status}` });
@@ -21,6 +22,18 @@ export const updateFindingStatus = async (req: Request, res: Response): Promise<
 
     if (!finding) {
       res.status(404).json({ error: 'Finding not found.' });
+      return;
+    }
+
+    // Tenant Isolation Check
+    if (userWorkspaceId && finding.review.workspaceId !== userWorkspaceId) {
+      res.status(403).json({ error: 'Unauthorized: Finding belongs to another workspace.' });
+      return;
+    }
+
+    // Protection: Prevent modifying findings on an already APPROVED review without unlocking
+    if (finding.review.status === 'APPROVED') {
+      res.status(400).json({ error: 'Invalid operation: Cannot modify findings on an approved content publication.' });
       return;
     }
 
@@ -70,6 +83,7 @@ export const applyCorrection = async (req: Request, res: Response): Promise<void
   try {
     const { id } = req.params;
     const userId = req.user?.id;
+    const userWorkspaceId = req.user?.workspaceId;
 
     const finding = await prisma.finding.findUnique({
       where: { id },
@@ -83,6 +97,17 @@ export const applyCorrection = async (req: Request, res: Response): Promise<void
 
     if (!finding || !finding.suggestedCorrection) {
       res.status(404).json({ error: 'Finding or suggested correction not found.' });
+      return;
+    }
+
+    // Tenant Isolation Check
+    if (userWorkspaceId && finding.review.workspaceId !== userWorkspaceId) {
+      res.status(403).json({ error: 'Unauthorized: Finding belongs to another workspace.' });
+      return;
+    }
+
+    if (finding.review.status === 'APPROVED') {
+      res.status(400).json({ error: 'Invalid operation: Cannot modify an approved review.' });
       return;
     }
 

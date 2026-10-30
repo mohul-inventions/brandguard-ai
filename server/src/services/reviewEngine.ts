@@ -189,6 +189,10 @@ export class ReviewEngine {
 
     if (!review) throw new Error('Review not found');
 
+    if (review.status === 'APPROVED') {
+      throw new Error('Lock Violation: Approved content reviews are frozen and cannot be directly revised without formal change request.');
+    }
+
     const nextVersionNum = review.currentVersionNum + 1;
 
     // Create next version

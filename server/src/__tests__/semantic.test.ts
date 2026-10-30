@@ -4,13 +4,14 @@ import { BrandGuideline, ApprovedSource } from '@prisma/client';
 describe('Semantic RAG & Vector Embedding Engine Tests', () => {
   test('Local vector embedding generation produces normalized unit vectors (L2 norm = 1.0)', async () => {
     const text = 'NovaTech Pulse delivers enterprise-grade real-time collaboration with seamless workflows.';
-    const vector = await EmbeddingService.getEmbedding(text);
+    const res = await EmbeddingService.getEmbedding(text);
 
-    expect(vector.length).toBe(128);
+    expect(res.vector.length).toBe(128);
+    expect(res.source).toBe('LOCAL_DENSE_PROJECTION');
 
     // Compute L2 norm
     let sumSq = 0;
-    for (const v of vector) {
+    for (const v of res.vector) {
       sumSq += v * v;
     }
     const norm = Math.sqrt(sumSq);
