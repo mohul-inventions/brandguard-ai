@@ -7,10 +7,14 @@ import {
   reanalyzeReview,
   getReviewHistory,
 } from '../controllers/reviewController';
+import { checkContentEphemeral } from '../controllers/ephemeralCheckController';
 import { requireAuth } from '../middleware/auth';
 import { upload } from '../middleware/upload';
 
 const router = Router();
+
+// Ephemeral real-time scan endpoint (authenticated or demo pass)
+router.post('/check-ephemeral', requireAuth, checkContentEphemeral);
 
 router.get('/', requireAuth, listReviews);
 router.get('/:id', requireAuth, getReviewById);

@@ -1,0 +1,37 @@
+/* BrandGuard AI Content Script Styles */
+#brandguard-floating-pill {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #38bdf8;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+#brandguard-floating-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -5px rgba(56, 189, 248, 0.3);
+}
+
+#brandguard-pill-score {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bg-score-green { background: #065f46; color: #6ee7b7; }
+.bg-score-yellow { background: #78350f; color: #fde68a; }
+.bg-score-red { background: #7f1d1d; color: #fca5a5; }

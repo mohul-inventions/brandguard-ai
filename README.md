@@ -1,6 +1,6 @@
 # BRANDGUARD AI 🛡️
 ### Intelligent Brand Governance & Content Compliance Platform
-> **Built for CodeStar 30 Hackathon — Round 2 Evaluation**  
+> **Built for CodeStar 30 Hackathon — Round 3 Final Submission**  
 > **Problem Statement Challenge by Inkloom AI**  
 > **Author & Solo Builder:** C R Mohul Ram (`mohulram07@gmail.com` | Amrita Vishwa Vidyapeetham)
 
@@ -10,22 +10,29 @@
 [![Node.js](https://img.shields.io/badge/Node.js-24-339933.svg)](https://nodejs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.22-2D3748.svg)](https://www.prisma.io/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8.svg)](https://tailwindcss.com/)
-[![Test Suite](https://img.shields.io/badge/Tests-Passing-22c55e.svg)]()
+[![Test Suite](https://img.shields.io/badge/Tests-13%20Passed-22c55e.svg)]()
+[![Manifest V3](https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-blueviolet.svg)]()
 
 ---
 
-## 1. Executive Summary & Problem Solved
+## 1. Executive Summary & Round 3 Enhancements
 
-Modern decentralized enterprises publish hundreds of marketing and communication pieces weekly across social channels, blogs, whitepapers, PR releases, and ad campaigns. Manual proofreading is slow, creates multi-day release bottlenecks, and misses critical non-compliant claims.
+Modern decentralized enterprises publish hundreds of marketing pieces weekly across social channels, blogs, whitepapers, PR releases, and ad campaigns. Manual proofreading is slow, creates multi-day release bottlenecks, and misses non-compliant claims.
 
 **BrandGuard AI** is an intelligent content governance and compliance platform that inspects content prior to publication against active corporate guidelines, approved ground-truth facts, legal disclaimer standards, and accessibility requirements.
 
-### Key Capabilities:
-- **8 Analysis Categories**: Brand Voice, Terminology, Factual Accuracy, Promotional Claims, Brand Messaging, Visual Compliance, Accessibility, and Confidentiality.
-- **Evidence-Linked Findings**: Every issue provides the exact text excerpt, rationale, guideline citation, verified source citation, confidence score, and recommended replacement.
-- **Side-by-Side AI Correction Workspace**: Intelligent editor highlighting exact errors with 1-click suggestion replacements and immutable draft versioning (`v1 -> v2`).
-- **Segregation of Duties & Approval Controls**: Backend strictly blocks creators from approving their own submissions. Formal sign-offs with recorded reasons are enforced for Reviewers and Brand Managers.
-- **Continuous Governance Telemetry**: Live analytics aggregating recurring violations to identify ambiguous corporate guidelines.
+### Round 3 Milestone Deliverables:
+1. **Chrome Browser Extension (Manifest V3)**:
+   - In-situ real-time compliance scanner running inside web text editors, Google Docs, WordPress Gutenberg, and LinkedIn.
+   - Live floating pill indicator displaying compliance scores and issue count.
+   - One-click suggestion insertion directly into editable fields.
+2. **Semantic RAG with Vector Embeddings**:
+   - Dense 128-dimensional embedding representations (`EmbeddingService`) with cosine similarity thresholding (`SemanticEngine`).
+   - Flags contextual tone deviations, informal street slang, and passive voice that bypass literal keyword/regex matches.
+3. **CMS Pre-Publish Webhook Gate**:
+   - Pre-publish validation gate for **Strapi**, **HubSpot**, and **Contentful**.
+   - HMAC SHA-256 signature verification ensuring secure webhook delivery.
+   - Configurable compliance thresholds (defaults to 80% + zero critical violations). Returns HTTP 200 (Allow Publish) or HTTP 422 (Block Publish with actionable violation reports).
 
 ---
 

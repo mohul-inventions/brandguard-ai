@@ -17,6 +17,7 @@ import commentRoutes from './routes/commentRoutes';
 import assetRoutes from './routes/assetRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import userRoutes from './routes/userRoutes';
+import webhookRoutes from './routes/webhookRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -60,6 +61,7 @@ app.use('/api/reviews/:id/comments', commentRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/webhooks', webhookRoutes);
 
 // Production Frontend Static Assets & SPA Fallback
 const clientDistPath = path.join(__dirname, '../../client/dist');

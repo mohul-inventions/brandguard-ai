@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "BrandGuard AI — Real-Time Brand Compliance",
+  "version": "1.0.0",
+  "description": "Instant brand governance, compliance scoring, and one-click remediation inside Google Docs, WordPress, LinkedIn, and web text editors.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "http://localhost:5173/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "BrandGuard AI Compliance Scanner"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

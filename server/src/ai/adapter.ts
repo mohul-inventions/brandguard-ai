@@ -1,5 +1,6 @@
 import { BrandGuideline, ApprovedSource } from '@prisma/client';
 import { FindingResult, AnalysisResponse, GuidelineCategory, IssueSeverity } from '../types';
+import { SemanticEngine } from './semanticEngine';
 
 export interface AIAnalysisRequest {
   content: string;
@@ -9,10 +10,11 @@ export interface AIAnalysisRequest {
   imageAttachmentUrl?: string;
   guidelines: BrandGuideline[];
   sources: ApprovedSource[];
+  enableSemanticAnalysis?: boolean;
 }
 
 export interface AIProviderAdapter {
-  name: 'DEMO_DETERMINISTIC' | 'OPENAI' | 'GEMINI' | 'ANTHROPIC';
+  name: 'DEMO_DETERMINISTIC' | 'SEMANTIC_RAG' | 'OPENAI' | 'GEMINI' | 'ANTHROPIC';
   analyze(request: AIAnalysisRequest): Promise<AnalysisResponse>;
 }
 
@@ -245,14 +247,35 @@ export class DemoRuleEngineAdapter implements AIProviderAdapter {
       });
     }
 
+    // Optional: Enhance with Semantic RAG analysis if requested or configured
+    if (request.enableSemanticAnalysis !== false) {
+      try {
+        const semanticFindings = await SemanticEngine.analyzeWithEmbeddings({
+          content,
+          guidelines,
+          sources,
+        });
+        // Deduplicate findings by excerpt & category
+        for (const sf of semanticFindings) {
+          const exists = findings.some(
+            (f) => f.category === sf.category && (f.excerpt.includes(sf.excerpt) || sf.excerpt.includes(f.excerpt))
+          );
+          if (!exists) {
+            findings.push(sf);
+          }
+        }
+      } catch (err) {
+        console.warn('[SemanticEngine] Semantic check skipped or failed:', err);
+      }
+    }
+
     // Calculate severity counts
     const criticalCount = findings.filter((f) => f.severity === 'CRITICAL').length;
     const highCount = findings.filter((f) => f.severity === 'HIGH').length;
     const mediumCount = findings.filter((f) => f.severity === 'MEDIUM').length;
     const lowCount = findings.filter((f) => f.severity === 'LOW').length;
 
-    // Deterministic Score Calculation
-    // Base 100, Critical -25, High -15, Medium -8, Low -3
+    // Deductions: Critical -25, High -15, Medium -8, Low -3
     const deductions = criticalCount * 25 + highCount * 15 + mediumCount * 8 + lowCount * 3;
     const overallScore = Math.max(0, 100 - deductions);
 
@@ -281,7 +304,7 @@ export class DemoRuleEngineAdapter implements AIProviderAdapter {
     return {
       engineUsed: 'DEMO_DETERMINISTIC',
       disclaimer:
-        'Analyzed via BrandGuard Deterministic Rule Engine. All findings are directly linked to active brand guidelines and verified approved sources. No fabricated claims.',
+        'Analyzed via BrandGuard Deterministic Rule Engine augmented with Semantic Vector Embeddings. All findings are directly linked to active brand guidelines and verified sources.',
       findings,
       categoryScores,
       overallScore,
@@ -306,7 +329,6 @@ export class ExternalLLMAdapter implements AIProviderAdapter {
   }
 
   async analyze(request: AIAnalysisRequest): Promise<AnalysisResponse> {
-    // If external call fails or isn't set up, fall back safely to deterministic demo
     try {
       if (this.name === 'OPENAI') {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
